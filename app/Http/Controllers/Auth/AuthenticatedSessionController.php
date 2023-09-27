@@ -29,6 +29,14 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $user = $request->user();
+
+        if ($user->role == 'merchant') {
+            return redirect()->intended('/' . $user->merchant_id . '/users');
+        } else if ($user->role == 'user') {
+            return redirect()->intended('/' . $user->merchant_id . '/users/' . $user->id);
+        }
+
         return redirect()->intended(RouteServiceProvider::HOME);
     }
 

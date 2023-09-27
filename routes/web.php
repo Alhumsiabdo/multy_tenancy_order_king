@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MerchantController;
 
@@ -17,15 +16,13 @@ use App\Http\Controllers\MerchantController;
 |
 */
 Route::middleware(['auth' => 'isAdmin'])->group(function() {
-    Route::get('/merchants',[AdminController::class, 'index'])->name('index.show');
-    Route::get('/merchants/{name}',[AdminController::class, 'showMerchantByName'])->name('show.merchant');
-    Route::get('/merchants/{name}/users',[AdminController::class, 'showMerchantUserByName'])->name('show.users');
+    Route::get('/',[MerchantController::class, 'index'])->name('index.show');
 });
-Route::middleware(['auth' => 'isMerchant'])->group(function() {
-    Route::get('/users', [MerchantController::class, 'index'])->name('index.users');
+Route::middleware(['auth' => 'isAdmin'])->group(function() {
+    Route::get('/{merchantId}/users',[MerchantController::class, 'showMerchantUserByName'])->name('show.users');
 });
-Route::middleware(['auth' => 'isUser'])->group(function() {
-    Route::get('/user', [UserController::class, 'index']);
+Route::middleware(['auth' => 'isAdmin'])->group(function() {
+    Route::get('/{merchantId}/users/{id}', [UserController::class, 'index']);
 });
 
 Route::get('/dashboard', function () {

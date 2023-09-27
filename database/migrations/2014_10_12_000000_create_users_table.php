@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->unsignedBigInteger('merchant_id');
+            $table->unsignedBigInteger('merchant_id')->nullable();
             $table->foreign('merchant_id')->references('id')->on('merchants');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();

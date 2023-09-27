@@ -15,9 +15,14 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->user()->role == 'super_admin') {
+        if (!auth()->user()) {
+            return redirect()->intended('/login');
+        }
+
+        if (auth()->user()->role == 'super_admin' || (auth()->user()->role == 'merchant' && auth()->user()->merchant_id == $request->route('merchantId')) || (auth()->user()->role == 'user' && $request->route('id') == auth()->user()->id)) {
             return $next($request);
         }
+
         return response()->json('Your dont have access this route');
     }
 }
