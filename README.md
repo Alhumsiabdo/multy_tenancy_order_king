@@ -1,66 +1,89 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## What is SaaS?
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Software as a service is a software licensing and delivery model in which software is licensed on a subscription basis and is centrally hosted. SaaS is also known as on-demand software, web-based software, or web-hosted software. (From wikipedia).
 
-## About Laravel
+In the case Orderking, SaaS means that you have a management software for businesses of different types, such as restaurants or merchants, through which they can manage aspects of their business that include:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+-   Order management
+-   Billing and transaction management
+-   User management
+-   Analytics for businesses
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Does a SaaS-Web App require the multi-database approach?
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+A SaaS web app does not require a multi-database approach. We can host the data of different merchants/users in one database using different methods. Both approaches, single database versus a multi-database have their own advantages and disadvantages:
 
-## Learning Laravel
+-   Cost efficiency:
+    -   Single database: Cheaper, not only in terms of monetary cost, but also in terms of maintenance.
+    -   Multi database: Expensive also in terms of maintenance.
+-   Simpler data management:
+    -   Single database: managing a single database is easier than managing multiple. For example, in Laravel, setting up access for a single database is easier than setting up access for many.
+    -   Multi database: More difficult. For example, in Laravel, we need to setup dynamic database creation which can be difficult to implement and deploy.
+-   Data sharing:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+    -   Single database: what if we needed to share data between the different tenants? A single database approach makes that easier.
+    -   Multi database: Sharing data between tenants would require extra code to define who can access who.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+-   Data isolation:
+    -   Single database: because all data is one database, if our implementation is not correct, we can be at risk of a merchant accessing the data of another merchant.
+    -   Multi database: Completely isolated by design.
+-   Performance:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+    -   Single database: As request number grows, our single database will be queried more. This will lead to longer query times. However, we can solve this problem by using a database replication approach.
+    -   Multi database: better performance as each database can be on its own server.
 
-## Laravel Sponsors
+-   Customization and preferences:
+    -   Single database: if we have complex customizations for each tenant, then we might end up with a very complex table structure that is difficult to understand and maintain.
+    -   Multi database: much simpler structure because of isolation.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+## What is multi-tenancy?
 
-### Premium Partners
+Multi-tenancy is a software architecture concept where a single instance of an application serves multiple tenants. This is a common architecture for SaaS apps such as OrderKing’s app because we need to serve the same software to multiple restaurants and keep their data isolated and separate. There are two approaches to multi-tenancy, single database and multi database and we explain the advantages and disadvantages of both above.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+## Which multi tenancy approach would you use for our project? (single or multi-database?
 
-## Contributing
+For our project, we will use a single database approach for the following reasons:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+-   A single database setup is good enough in this case, assuming that we do not have many merchants.
+-   If our number of merchants increases, we can use a solution such as database replication to handle the extra load.
+-   This task has a limited time and spending too much time on setting up a multi database approach will disable me from concentrating on other aspects of the task.
 
-## Code of Conduct
+## Implementation details
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+-   How I achieved multi-tenancy:
+    I used the relational approach where I created a merchant_id to indicate to which merchant a user belongs.
+-   Superadmin, merchant, and user separation: I achieved this separation by creating different folders in the resources folder using inertiajs.
 
-## Security Vulnerabilities
+## How to run this project
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1- Composer install  
+2- npm install  
+3- change name of .env.example to .env and change mysql connection details  
+3- php artisan migrate  
+4- php artisan db:seed  
+4- php artisan key:generate  
+5- php artisan serve  
+6- npm run dev  
+7- Go to http://localhost:8000/
 
-## License
+## Users
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Superadmin:
+
+username: super_admin@example.com  
+password: abcd12345
+
+### Merchant 1:
+
+username: merchant1@example.com  
+password: abcd12345
+
+### Merchant 2:
+
+username: merchant2@example.com  
+password: abcd12345
+
+### test user that belongs to merchant1:
+
+username: test_user1@example.com  
+password: abcd12345
